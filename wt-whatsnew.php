@@ -122,7 +122,11 @@ function wtwhatsnew_view(){
 	<h2>what's New</h2>
 	<div><p>ショートコード：[whatsnew limit="2" cat_id="7"] </p></div>
 	<div><p>limit=表示件数、cat_id=カテゴリID(数字)、style=""=default</p></div>
-	<div><p>style= default,　title_list(タイトルのみ),　title_contents(タイトルと本文)</p></div>
+	<div><p>style= title_list(タイトルのみ),　title_contents(タイトルと本文) ※デフォルトはtitle_list</p></div>
+	<div><p>カスタムフィールド[wt_link]の値があった場合、直ウィンドウリンク</p></div>
+	<div><p>カスタムフィールド[wt_target_link]の値があった場合、別ウィンドウリンク</p></div>
+
+	<br>
 	<br>
 	<h2>FAQ shortcode</h2>
 	<div><p>デフォルトショートコード：[faq]</p></div>
@@ -157,139 +161,97 @@ function wtwhatsnew_shortcode( $atts ) {
 	$wtwhatsnew = new WP_Query( $args );
 
 	if ( $wtwhatsnew->have_posts() ) :
-
 		$outputhtml = "";
 		$outputhtml .= '<div class="whatsnew-cateid">';
 		$outputhtml .= '<ul>';
-		// ---------------------------------------------------------------------------
-		// ■ title_list タイトルのみの場合（デフォルト）
-		// ---------------------------------------------------------------------------
-		if($style=="title_list") :
-			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
-				$whatsnewid = $post->ID;
-				$cats = get_the_category($post->id);
-				$cat = $cats[0];
-				$cat_name = $cat->cat_name; // カテゴリー名
-				$cat_slug  = $cat->category_nicename; // カテゴリースラッグ
-				$category_icon = '<dd class="item topic_cate"><span class="category_icon ' . $cat_slug . '">' . $cat_name . '</span></dd>';// カテゴリーアイコン
-				$topic_time = $post->post_date;
-				$topic_time = date('Y/m/d/', strtotime($topic_time)); // 日付をフォーマット
-				//NEW
-				$newicon = '';
-				if( get_option( 'wt_new_checkbox' )) {// DBをみる
-					$days = 7;// 公開してから7日間はNew表示
-					$today = date_i18n('U');
-					$entry = get_the_time('U');
-					$elapsed = date('U',($today - $entry)) / 86400;
-					if( $days > $elapsed ){
-						$newicon =  '<span class="newicon">New</span>';
-					}
+		while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
+			$whatsnewid = $post->ID;
+			$cats = get_the_category($post->id);
+			$cat = $cats[0];
+			$cat_name = $cat->cat_name; // カテゴリー名
+			$cat_slug  = $cat->category_nicename; // カテゴリースラッグ
+			$category_icon = '<dd class="item topic_cate"><span class="category_icon ' . $cat_slug . '">' . $cat_name . '</span></dd>';// カテゴリーアイコン
+			$topic_time = $post->post_date;
+			$topic_time = date('Y/m/d/', strtotime($topic_time)); // 日付をフォーマット
+			//NEW
+			$newicon = '';
+			if( get_option( 'wt_new_checkbox' )) {// DBをみる
+				$days = 7;// 公開してから7日間はNew表示
+				$today = date_i18n('U');
+				$entry = get_the_time('U');
+				$elapsed = date('U',($today - $entry)) / 86400;
+				if( $days > $elapsed ){
+					$newicon =  '<span class="newicon">New</span>';
 				}
-				$wt_target_link = '';
-				// カスタムフィールド[wt_link]の値があった場合、直リンク
-				$wt_link = get_post_meta($whatsnewid, 'wt_link', false);
-				$wt_target_link = get_post_meta($whatsnewid, 'wt_target_link', false);
-				if(count($wt_link) > 0) {
-					foreach($wt_link as $value) {
-						$wt_target_link = '<a href=' .$value .' target="">';
-					}
+			}
+			$wt_target_link = '';
+			// カスタムフィールド[wt_link]の値があった場合、直リンク
+			$wt_link = get_post_meta($whatsnewid, 'wt_link', false);
+			$wt_target_link = get_post_meta($whatsnewid, 'wt_target_link', false);
+			if(count($wt_link) > 0) {
+				foreach($wt_link as $value) {
+					$wt_target_link = '<a href=' .$value .' target="">';
 				}
-				// カスタムフィールド[wt_target_link]の値があった場合、別ウィンドウリンク
-				elseif(count($wt_target_link) > 0) {
-					foreach($wt_target_link as $value) {
-						$wt_target_link = '<a href=' .$value .' target="_blank">';
-					}
+			}
+			// カスタムフィールド[wt_target_link]の値があった場合、別ウィンドウリンク
+			elseif(count($wt_target_link) > 0) {
+				foreach($wt_target_link as $value) {
+					$wt_target_link = '<a href=' .$value .' target="_blank">';
 				}
-				// デフォルト
-				else {
-						$wt_target_link = '<a href="' .$post->guid .'" class="" target="">';
-				}
+			}
+			// デフォルト
+			else {
+					$wt_target_link = '<a href="' .$post->guid .'" class="" target="">';
+			}
+			// ---------------------------------------------------------------------------
+			// ■ title_list タイトルのみの場合（デフォルト）
+			// ---------------------------------------------------------------------------
+			if($style=="title_list") :
+					$outputhtml .= '<!-- カテゴリIDで抽出(title_list) -->';
+					$outputhtml .= '<li class="whatsnew-item" id="' .$whatsnewid .'" style="list-style-type: none;">';
+					$outputhtml .= '<div class="whatsnew-question " id="' .$whatsnewid .'">';
+					$outputhtml .= '<div class="whatsnew_text_01 flexwrap">';
+					$outputhtml .= '<dd class="item topic_time">';
+					$outputhtml .= $topic_time;
+					$outputhtml .= '</dd>';
+					$outputhtml .= $category_icon;
+					$outputhtml .= '<dd class="item topic_title">';
+					//$outputhtml .= '<a href="' .$post->guid .'" class="" target="">' .$post->post_title  .'</a>';
+					$outputhtml .= $wt_target_link .$post->post_title  .'</a>';
+					$outputhtml .= $newicon;
+					$outputhtml .= '</dd>';
+					$outputhtml .= '</div>';
+					$outputhtml .= '</div>';
+					$outputhtml .= '</li>';
 
-				$outputhtml .= '<!-- カテゴリIDで抽出 -->';
-				$outputhtml .= '<li class="whatsnew-item" id="' .$whatsnewid .'" style="list-style-type: none;">';
-				$outputhtml .= '<div class="whatsnew-question " id="' .$whatsnewid .'">';
-				$outputhtml .= '<div class="whatsnew_text_01 flexwrap">';
-				$outputhtml .= '<dd class="item topic_time">';
-				$outputhtml .= $topic_time;
-				$outputhtml .= '</dd>';
-				$outputhtml .= $category_icon;
-				$outputhtml .= '<dd class="item topic_title">';
-				//$outputhtml .= '<a href="' .$post->guid .'" class="" target="">' .$post->post_title  .'</a>';
-				$outputhtml .= $wt_target_link .$post->post_title  .'</a>';
-				$outputhtml .= $newicon;
-				$outputhtml .= '</dd>';
-				$outputhtml .= '</div>';
-				$outputhtml .= '</div>';
-				$outputhtml .= '</li>';
-			endwhile;
-		// ---------------------------------------------------------------------------
-		// ■ title_list タイトルとコンテンツの場合
-		// ---------------------------------------------------------------------------
-		elseif($style=="title_contents") :
-			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
-			endwhile;
-		// ---------------------------------------------------------------------------
-		// ■ default デフォルトの場合
-		// ---------------------------------------------------------------------------
-		elseif($style=="default") :
-			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
-				$whatsnewid = $post->ID;
-				$cats = get_the_category($post->id);
-				$cat = $cats[0];
-				$cat_name = $cat->cat_name; // カテゴリー名
-				$cat_slug  = $cat->category_nicename; // カテゴリースラッグ
-				$category_icon = '<dd class="item topic_cate"><span class="category_icon ' . $cat_slug . '">' . $cat_name . '</span></dd>';// カテゴリーアイコン
-				$topic_time = $post->post_date;
-				$topic_time = date('Y/m/d/', strtotime($topic_time)); // 日付をフォーマット
-				//NEW
-				$newicon = '';
-				if( get_option( 'wt_new_checkbox' )) {// DBをみる
-					$days = 7;// 公開してから7日間はNew表示
-					$today = date_i18n('U');
-					$entry = get_the_time('U');
-					$elapsed = date('U',($today - $entry)) / 86400;
-					if( $days > $elapsed ){
-						$newicon =  '<span class="newicon">New</span>';
-					}
-				}
-				$wt_target_link = '';
-				// カスタムフィールド[wt_link]の値があった場合、直リンク
-				$wt_link = get_post_meta($whatsnewid, 'wt_link', false);
-				$wt_target_link = get_post_meta($whatsnewid, 'wt_target_link', false);
-				if(count($wt_link) > 0) {
-					foreach($wt_link as $value) {
-						$wt_target_link = '<a href=' .$value .' target="">';
-					}
-				}
-				// カスタムフィールド[wt_target_link]の値があった場合、別ウィンドウリンク
-				elseif(count($wt_target_link) > 0) {
-					foreach($wt_target_link as $value) {
-						$wt_target_link = '<a href=' .$value .' target="_blank">';
-					}
-				}
-				// デフォルト
-				else {
-						$wt_target_link = '<a href="' .$post->guid .'" class="" target="">';
-				}
+			// ---------------------------------------------------------------------------
+			// ■ title_list タイトルとコンテンツの場合
+			// ---------------------------------------------------------------------------
+			elseif($style=="title_contents") :
+					$outputhtml .= '<!-- (title_contents) -->';
 
-				$outputhtml .= '<!-- カテゴリIDで抽出 -->';
-				$outputhtml .= '<li class="whatsnew-item" id="' .$whatsnewid .'" style="list-style-type: none;">';
-				$outputhtml .= '<div class="whatsnew-question " id="' .$whatsnewid .'">';
-				$outputhtml .= '<div class="whatsnew_text_01 flexwrap">';
-				$outputhtml .= '<dd class="item topic_time">';
-				$outputhtml .= $topic_time;
-				$outputhtml .= '</dd>';
-				$outputhtml .= $category_icon;
-				$outputhtml .= '<dd class="item topic_title">';
-				//$outputhtml .= '<a href="' .$post->guid .'" class="" target="">' .$post->post_title  .'</a>';
-				$outputhtml .= $wt_target_link .$post->post_title  .'</a>';
-				$outputhtml .= $newicon;
-				$outputhtml .= '</dd>';
-				$outputhtml .= '</div>';
-				$outputhtml .= '</div>';
-				$outputhtml .= '</li>';
+			// ---------------------------------------------------------------------------
+			// ■ default デフォルトの場合
+			// ---------------------------------------------------------------------------
+			else :
+					$outputhtml .= '<!-- カテゴリIDで抽出(default) -->';
+					$outputhtml .= '<li class="whatsnew-item" id="' .$whatsnewid .'" style="list-style-type: none;">';
+					$outputhtml .= '<div class="whatsnew-question " id="' .$whatsnewid .'">';
+					$outputhtml .= '<div class="whatsnew_text_01 flexwrap">';
+					$outputhtml .= '<dd class="item topic_time">';
+					$outputhtml .= $topic_time;
+					$outputhtml .= '</dd>';
+					$outputhtml .= $category_icon;
+					$outputhtml .= '<dd class="item topic_title">';
+					//$outputhtml .= '<a href="' .$post->guid .'" class="" target="">' .$post->post_title  .'</a>';
+					$outputhtml .= $wt_target_link .$post->post_title  .'</a>';
+					$outputhtml .= $newicon;
+					$outputhtml .= '</dd>';
+					$outputhtml .= '</div>';
+					$outputhtml .= '</div>';
+					$outputhtml .= '</li>';
+			endif;
 			endwhile;
-		endif;
 			$outputhtml .= '</ul>';
 			$outputhtml .= '</div>';
 			print_r( $outputhtml);
