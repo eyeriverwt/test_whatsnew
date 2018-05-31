@@ -16,38 +16,38 @@ define( 'WTWHATS_THEME', get_stylesheet_directory() );
 define( 'WTWHATS_THEMEURI', get_stylesheet_directory_uri() );
 
 function wtwhatsnew_style_script() {
-	if(file_exists(THEME . '/wt-whatsnew.css.css')) {
-		wp_enqueue_style('wt-whatsnew', WTWHATS_THEMEURI . '/wt-whatsnew.css', false, '0.1', 'all');
-	} else {
-		wp_enqueue_style('wt-whatsnew', WTWHATS_STYLES . 'wt-whatsnew.css', false, '0.1', 'all');
-	}
-	//wp_enqueue_script('wt-faq', SCRIPTS . 'wt-faq.js', array( 'jquery'), '0.1', true);
+    if(file_exists(THEME . '/wt-whatsnew.css.css')) {
+        wp_enqueue_style('wt-whatsnew', WTWHATS_THEMEURI . '/wt-whatsnew.css', false, '0.1', 'all');
+    } else {
+        wp_enqueue_style('wt-whatsnew', WTWHATS_STYLES . 'wt-whatsnew.css', false, '0.1', 'all');
+    }
+    //wp_enqueue_script('wt-faq', SCRIPTS . 'wt-faq.js', array( 'jquery'), '0.1', true);
 }
 add_action( 'wp_enqueue_scripts', 'wtwhatsnew_style_script' );
 
 /*------------------------ admin --------------------------*/
 //管理画面にメニューを追加
 function add_pages(){
-	//create new top-level menu
-	add_menu_page('新着情報', 'WT新着情報 設定', 'level_8', WTWHATS_ROOT, 'wtwhatsnew_view', 'dashicons-tag',26);
-	
-	//call register settings function
-	add_action( 'admin_init', 'register_mysettings' );
+    //create new top-level menu
+    add_menu_page('新着情報', 'WT新着情報 設定', 'level_8', WTWHATS_ROOT, 'wtwhatsnew_view', 'dashicons-tag',26);
+
+    //call register settings function
+    add_action( 'admin_init', 'register_mysettings' );
 }
 add_action('admin_menu', 'add_pages');
 
 
 function register_mysettings() {
-	// 設定を登録します(入力値チェック用)。
-	// register_setting( $option_group, $option_name, $sanitize_callback )
-	//   $option_group      : 設定のグループ名
-	//   $option_name       : 設定項目名(DBに保存する名前)
-	//   $sanitize_callback : 入力値調整をする際に呼ばれる関数
-	//register_setting( 'test_setting', 'test_setting', array( $this, 'sanitize' ) );	
-	register_setting( 'wtwhatsnew_option-group', 'wt_text' );
-	register_setting( 'wtwhatsnew_option-group', 'wt_radio' );
-	register_setting( 'wtwhatsnew_option-group', 'wt_select' );
-	register_setting( 'wtwhatsnew_option-group', 'wt_new_checkbox' );
+    // 設定を登録します(入力値チェック用)。
+    // register_setting( $option_group, $option_name, $sanitize_callback )
+    //   $option_group      : 設定のグループ名
+    //   $option_name       : 設定項目名(DBに保存する名前)
+    //   $sanitize_callback : 入力値調整をする際に呼ばれる関数
+    //register_setting( 'test_setting', 'test_setting', array( $this, 'sanitize' ) );
+    register_setting( 'wtwhatsnew_option-group', 'wt_text' );
+    register_setting( 'wtwhatsnew_option-group', 'wt_radio' );
+    register_setting( 'wtwhatsnew_option-group', 'wt_select' );
+    register_setting( 'wtwhatsnew_option-group', 'wt_new_checkbox' );
 }
 
 
@@ -63,7 +63,7 @@ function wtwhatsnew_view(){
         $wt_checkbox = isset($_POST['wt_checkbox']) ? 1 : 0;
         update_option('wt_checkbox', $wt_checkbox);
     }
-?>
+    ?>
 <div class="wrap">
 <h2>新着情報 設定</h2>
 <?php
@@ -75,12 +75,12 @@ function wtwhatsnew_view(){
 ?>
 
 <form method="post" action="options.php">
-	
+
 <?php
      settings_fields( 'wtwhatsnew_option-group' );
      do_settings_sections( 'wtwhatsnew_option-group' );
-?>	
-	
+?>
+
 <table class="form-table">
     <tr style="display:none;">
         <th scope="row"><label for="my_text">testテキスト</label></th>
@@ -109,13 +109,13 @@ function wtwhatsnew_view(){
 <?php submit_button(); ?>
 </form>
 </div>
-<?php	
-	
+<?php
+
 // DBの設定値を取得します。
-        //$this->options = get_option( 'wt_text' );	
+        //$this->options = get_option( 'wt_text' );
         //$message = isset( $this->options['wt_text'] ) ? $this->options['wt_text'] : '';
-		
-		//echo get_option( 'wt_text' );	
+
+		//echo get_option( 'wt_text' );
 ?>
 <div class="wrap">
 	<h2>shortcode</h2>
@@ -149,24 +149,24 @@ function wtwhatsnew_shortcode( $atts ) {
 	extract( shortcode_atts( array ('limit' => '', 'cat_id' => '','style' => 'default'), $atts ) );
 	$args = array( 'posts_per_page' => $limit, 'cat' => $cat_id );
 	$args_old = array( 'posts_per_page' => $limit, 'cat' => $cat_id, 'order' => 'ASC');//古い記事順
-	
+
 	global $post;
-	
+
 	//$wtwhatsnew = new WP_Query( $args_old );//古い記事順
 	//$wtwhatsnew = new WP_Query( $args );//新しい記事順
 	$wtwhatsnew = new WP_Query( $args );
-	
-	if ( $wtwhatsnew->have_posts() ) : 
-		
+
+	if ( $wtwhatsnew->have_posts() ) :
+
 		$outputhtml = "";
 		$outputhtml .= '<div class="whatsnew-cateid">';
 		$outputhtml .= '<ul>';
 		// ---------------------------------------------------------------------------
 		// ■ title_list タイトルのみの場合（デフォルト）
 		// ---------------------------------------------------------------------------
-		if($style=="title_list") : 
-			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post(); 
-				$whatsnewid = $post->ID; 
+		if($style=="title_list") :
+			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
+				$whatsnewid = $post->ID;
 				$cats = get_the_category($post->id);
 				$cat = $cats[0];
 				$cat_name = $cat->cat_name; // カテゴリー名
@@ -185,6 +185,26 @@ function wtwhatsnew_shortcode( $atts ) {
 						$newicon =  '<span class="newicon">New</span>';
 					}
 				}
+				$wt_target_link = '';
+				// カスタムフィールド[wt_link]の値があった場合、直リンク
+				$wt_link = get_post_meta($whatsnewid, 'wt_link', false);
+				$wt_target_link = get_post_meta($whatsnewid, 'wt_target_link', false);
+				if(count($wt_link) > 0) {
+					foreach($wt_link as $value) {
+						$wt_target_link = '<a href=' .$value .' target="">';
+					}
+				}
+				// カスタムフィールド[wt_target_link]の値があった場合、別ウィンドウリンク
+				elseif(count($wt_target_link) > 0) {
+					foreach($wt_target_link as $value) {
+						$wt_target_link = '<a href=' .$value .' target="_blank">';
+					}
+				}
+				// デフォルト
+				else {
+						$wt_target_link = '<a href="' .$post->guid .'" class="" target="">';
+				}
+
 				$outputhtml .= '<!-- カテゴリIDで抽出 -->';
 				$outputhtml .= '<li class="whatsnew-item" id="' .$whatsnewid .'" style="list-style-type: none;">';
 				$outputhtml .= '<div class="whatsnew-question " id="' .$whatsnewid .'">';
@@ -194,7 +214,8 @@ function wtwhatsnew_shortcode( $atts ) {
 				$outputhtml .= '</dd>';
 				$outputhtml .= $category_icon;
 				$outputhtml .= '<dd class="item topic_title">';
-				$outputhtml .= '<a href="' .$post->guid .'" class="css_arrow sample4-6" target="">' .$post->post_title  .'</a>';
+				//$outputhtml .= '<a href="' .$post->guid .'" class="" target="">' .$post->post_title  .'</a>';
+				$outputhtml .= $wt_target_link .$post->post_title  .'</a>';
 				$outputhtml .= $newicon;
 				$outputhtml .= '</dd>';
 				$outputhtml .= '</div>';
@@ -205,8 +226,14 @@ function wtwhatsnew_shortcode( $atts ) {
 		// ■ title_list タイトルとコンテンツの場合
 		// ---------------------------------------------------------------------------
 		elseif($style=="title_contents") :
-			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post(); 
-				$whatsnewid = $post->ID; 
+			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
+			endwhile;
+		// ---------------------------------------------------------------------------
+		// ■ default デフォルトの場合
+		// ---------------------------------------------------------------------------
+		elseif($style=="default") :
+			while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
+				$whatsnewid = $post->ID;
 				$cats = get_the_category($post->id);
 				$cat = $cats[0];
 				$cat_name = $cat->cat_name; // カテゴリー名
@@ -225,6 +252,26 @@ function wtwhatsnew_shortcode( $atts ) {
 						$newicon =  '<span class="newicon">New</span>';
 					}
 				}
+				$wt_target_link = '';
+				// カスタムフィールド[wt_link]の値があった場合、直リンク
+				$wt_link = get_post_meta($whatsnewid, 'wt_link', false);
+				$wt_target_link = get_post_meta($whatsnewid, 'wt_target_link', false);
+				if(count($wt_link) > 0) {
+					foreach($wt_link as $value) {
+						$wt_target_link = '<a href=' .$value .' target="">';
+					}
+				}
+				// カスタムフィールド[wt_target_link]の値があった場合、別ウィンドウリンク
+				elseif(count($wt_target_link) > 0) {
+					foreach($wt_target_link as $value) {
+						$wt_target_link = '<a href=' .$value .' target="_blank">';
+					}
+				}
+				// デフォルト
+				else {
+						$wt_target_link = '<a href="' .$post->guid .'" class="" target="">';
+				}
+
 				$outputhtml .= '<!-- カテゴリIDで抽出 -->';
 				$outputhtml .= '<li class="whatsnew-item" id="' .$whatsnewid .'" style="list-style-type: none;">';
 				$outputhtml .= '<div class="whatsnew-question " id="' .$whatsnewid .'">';
@@ -234,14 +281,15 @@ function wtwhatsnew_shortcode( $atts ) {
 				$outputhtml .= '</dd>';
 				$outputhtml .= $category_icon;
 				$outputhtml .= '<dd class="item topic_title">';
-				$outputhtml .= '<a href="' .$post->guid .'" class="css_arrow sample4-6" target="">' .$post->post_title  .'</a>';
+				//$outputhtml .= '<a href="' .$post->guid .'" class="" target="">' .$post->post_title  .'</a>';
+				$outputhtml .= $wt_target_link .$post->post_title  .'</a>';
 				$outputhtml .= $newicon;
 				$outputhtml .= '</dd>';
 				$outputhtml .= '</div>';
 				$outputhtml .= '</div>';
 				$outputhtml .= '</li>';
 			endwhile;
-		endif; 
+		endif;
 			$outputhtml .= '</ul>';
 			$outputhtml .= '</div>';
 			print_r( $outputhtml);
@@ -251,7 +299,7 @@ function wtwhatsnew_shortcode( $atts ) {
 			wp_reset_query();
 			$myvariable = ob_get_clean();
 			return $myvariable;
-	endif; 
+	endif;
 	//echo $outputhtml;
 
 }
@@ -267,7 +315,7 @@ function wtwhatsnew_activation_callback() {
     // 後ほど、この FAQ の投稿を追加したときに初めて
     // 投稿エントリーの post_type カラム（データベースの列）からのみ FAQ が参照される。
     create_wtwhatsnew_custom_post_type();
-    
+
     // 重要：下記はこの例のプラグイン有効化フックの中で *のみ* 実行される！
     // これをページ読み込みの度に呼び出すことは *絶対に行ってはならない*！！
     flush_rewrite_rules();
