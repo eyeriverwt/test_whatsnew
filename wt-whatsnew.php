@@ -162,6 +162,13 @@ function wtwhatsnew_shortcode( $atts ) {
 
 	if ( $wtwhatsnew->have_posts() ) :
 		$outputhtml = "";
+		if($style=="title_list"){
+			$outputhtml .= '<div id="whatsnew-title_list">';
+		}elseif($style=="title_contents"){
+			$outputhtml .= '<div id="title_contents">';
+		}else{
+			$outputhtml .= '<div id="whatsnew-default">';
+		}
 		$outputhtml .= '<div class="whatsnew-cateid">';
 		$outputhtml .= '<ul>';
 		while ($wtwhatsnew->have_posts()) : $wtwhatsnew->the_post();
@@ -253,6 +260,7 @@ function wtwhatsnew_shortcode( $atts ) {
 			endif;
 			endwhile;
 			$outputhtml .= '</ul>';
+			$outputhtml .= '</div>';
 			$outputhtml .= '</div>';
 			print_r( $outputhtml);
 			//print_r( "<br>");
