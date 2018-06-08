@@ -1,0 +1,65 @@
+/*-------------- style = default -------------------------*/
+.whatsnew-cateid ul,
+.whatsnew-cateid ul li{
+    padding: 0px;
+    margin: 0px;
+}
+.whatsnew-question {
+    background: #fff;
+    border-bottom: 1px dotted #ddd;
+    padding: 10px 5px 5px;
+}
+
+.whatsnew_text_01,
+div.topic_cate,
+.whatsnew_text_01 dd.topic_time,
+.whatsnew_text_01 dd.topic_title {
+    padding: 0px;
+    margin: 0px;
+	margin-bottom: 0;
+}
+.whatsnew_text_01 {
+	width: 100%;
+	justify-content: flex-start !important;
+    align-items: baseline !important;
+}
+.whatsnew_text_01 dd.topic_time {
+    height: 100%;
+    width: 100px;
+    vertical-align: top;
+    justify-content: flex-start !important;
+}
+.whatsnew_text_01 dd.topic_title {
+    width: 540px;
+    justify-content: flex-start !important;
+}
+
+
+/*--------------icon -------------------------*/
+span.newicon {
+    font-size: small;
+    font-size: 9px;
+    color: #FFF;
+    background: #F00;
+    padding: 2px 9px 1px;
+    margin-left: 5px;
+    border-radius: 3px;
+}
+span.category_icon {
+    font-size: small;
+    font-size: 11px;
+    color: #FFF;
+    background: #03A9F4;
+    padding: 2px 9px 1px;
+    border-radius: 25px;
+    padding: 4px 5px 2px;
+	display: inline-block;
+    vertical-align: top;
+    margin-left: 5px;
+}
+span.category_icon.news {
+    background: #f00;
+}
+div.topic_cate {
+	width:60px;
+}
